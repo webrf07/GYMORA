@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Meals - GYMORA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Orbitron:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header class="header">
+    <div class="header-top">
+      <div class="line-left"></div>
+      <div class="logo-wrap">
+        <img src="gymora-logo.jpg" alt="GYMORA Logo" />
+      </div>
+      <div class="line-right"></div>
+    </div>
+    <div class="app-title">GYMORA</div>
+  </header>
+
+  <nav class="nav-tabs">
+    <a href="index.html">Home</a>
+    <a href="workout.html">Workout</a>
+    <a href="meals.html" class="active">Meals</a>
+    <a href="progress.html">Progress</a>
+    <a href="iagym.html">IA Gym</a>
+  </nav>
+
+  <main class="content">
+    <div class="section-hero">
+      <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&h=400&fit=crop" alt="Meals" />
+      <div class="overlay"><h2>Weekly Meal Logger</h2></div>
+    </div>
+
+    <div class="card">
+      <h3>📷 Meal Photo</h3>
+      <div class="meal-photo-preview" id="mealPreview">
+        <div class="placeholder">Tap to take or choose a photo</div>
+      </div>
+      <input type="file" id="mealPhoto" accept="image/*" capture="environment" style="display:none" />
+      <button class="btn btn-secondary" id="photoBtn">📸 Take / Choose Photo</button>
+    </div>
+
+    <div class="card">
+      <h3>🍽️ Meal Details</h3>
+      <label>Meal Name</label>
+      <input type="text" id="mealName" placeholder="e.g. Grilled Chicken with Rice" />
+
+      <label>Quantity</label>
+      <input type="text" id="mealQty" placeholder="e.g. 200 g" />
+
+      <label>Day</label>
+      <select id="mealDay">
+        <option value="Saturday">Saturday</option>
+        <option value="Sunday">Sunday</option>
+        <option value="Monday">Monday</option>
+        <option value="Tuesday">Tuesday</option>
+        <option value="Wednesday">Wednesday</option>
+        <option value="Thursday">Thursday</option>
+        <option value="Friday">Friday</option>
+      </select>
+
+      <label>Meal Time</label>
+      <select id="mealTime">
+        <option value="Breakfast">Breakfast</option>
+        <option value="Lunch">Lunch</option>
+        <option value="Dinner">Dinner</option>
+        <option value="Snack">Snack</option>
+        <option value="Pre-Workout">Pre-Workout</option>
+        <option value="Post-Workout">Post-Workout</option>
+      </select>
+
+      <label>Calories (kcal)</label>
+      <input type="number" id="mealCals" placeholder="e.g. 450" min="0" />
+
+      <button class="btn" id="saveMealBtn">💾 Save Meal</button>
+    </div>
+
+    <div class="card">
+      <h3>📋 This Week's Meals</h3>
+      <div class="log-list" id="mealLog">
+        <p style="color:#666;font-size:13px;text-align:center;">No meals logged yet</p>
+      </div>
+    </div>
+
+    <p class="footer-note">GYMORA © 2026</p>
+  </main>
+
+  <div class="toast" id="toast"></div>
+  <script src="app.js"></script>
+  <script>
+    let currentPhotoData = null;
+
+    async function initMealsPage() {
+      await Gymora.openDatabase();
+      renderMeals();
+
+      document.getElementById('photoBtn').addEventListener('click', () => {
+        document.getElementById('mealPhoto').click();
+      });
+
+      document.getElementById('mealPhoto').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = ev => {
+            currentPhotoData = ev.target.result;
+            document.getElementById('mealPreview').innerHTML =
+              `<img src="${ev.target.result}" alt="meal" />`;
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+
+      document.getElementById('saveMealBtn').addEventListener('click', saveMeal);
+    }
+
+    async function saveMeal() {
+      const name = document.getElementById('mealName').value.trim();
+      const qty = document.getElementById('mealQty').value.trim();
+      const day = document.getElementById('mealDay').value;
+      const time = document.getElementById('mealTime').value;
+      const cals = document.getElementById('mealCals').value;
+
+      if (!name || !qty || !cals) {
+        Gymora.showToast('Please fill the required fields');
+        return;
+      }
+
+      const entry = {
+        name,
+        quantity: qty,
+        day,
+        time,
+        calories: parseInt(cals),
+        photo: currentPhotoData,
+        date: Gymora.formatDate(),
+        timestamp: Date.now()
+      };
+
+      try {
+        await Gymora.addRecord('meals', entry);
+        Gymora.showToast('Meal saved ✓');
+
+        document.getElementById('mealName').value = '';
+        document.getElementById('mealQty').value = '';
+        document.getElementById('mealCals').value = '';
+        document.getElementById('mealPreview').innerHTML =
+          '<div class="placeholder">Tap to take or choose a photo</div>';
+        currentPhotoData = null;
+        document.getElementById('mealPhoto').value = '';
+
+        renderMeals();
+      } catch (err) {
+        console.error(err);
+        Gymora.showToast('Error saving meal');
+      }
+    }
+
+    async function renderMeals() {
+      const log = document.getElementById('mealLog');
+      try {
+        const meals = await Gymora.getAllRecords('meals');
+        meals.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+        if (meals.length === 0) {
+          log.innerHTML = '<p style="color:#666;font-size:13px;text-align:center;">No meals logged yet</p>';
+          return;
+        }
+
+        log.innerHTML = meals.slice(0, 15).map(m => `
+          <div class="log-item">
+            <div class="info">
+              <strong>${m.name}</strong>
+              ${m.quantity} • ${m.calories} kcal • ${m.time}
+            </div>
+            <div class="meta">${m.day}<br>${m.date}</div>
+          </div>
+        `).join('');
+      } catch (err) {
+        log.innerHTML = '<p style="color:#666;font-size:13px;text-align:center;">Could not load meals</p>';
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initMealsPage);
+    } else {
+      initMealsPage();
+    }
+  </script>
+</body>
+</html>

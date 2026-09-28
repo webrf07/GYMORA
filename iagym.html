@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>IA Gym - GYMORA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Orbitron:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header class="header">
+    <div class="header-top">
+      <div class="line-left"></div>
+      <div class="logo-wrap">
+        <img src="gymora-logo.jpg" alt="GYMORA Logo" />
+      </div>
+      <div class="line-right"></div>
+    </div>
+    <div class="app-title">GYMORA</div>
+  </header>
+
+  <nav class="nav-tabs">
+    <a href="index.html">Home</a>
+    <a href="workout.html">Workout</a>
+    <a href="meals.html">Meals</a>
+    <a href="progress.html">Progress</a>
+    <a href="iagym.html" class="active">IA Gym</a>
+  </nav>
+
+  <main class="content">
+    <div class="section-hero">
+      <img src="https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=800&h=400&fit=crop" alt="AI Gym" />
+      <div class="overlay"><h2>AI Meal Analyzer</h2></div>
+    </div>
+
+    <div class="card">
+      <h3>🤖 Photograph Your Meal</h3>
+      <p style="font-size:13px;color:#aaa;margin-bottom:12px;">
+        Take a photo of your meal and our AI will estimate calories and macros.
+        For best results, photograph from above with good lighting.
+      </p>
+
+      <div class="meal-photo-preview" id="aiPreview">
+        <div class="placeholder">Tap to photograph your meal</div>
+      </div>
+      <input type="file" id="aiPhoto" accept="image/*" capture="environment" style="display:none" />
+      <button class="btn btn-secondary" id="aiPhotoBtn">📷 Take Photo</button>
+
+      <label style="margin-top:14px;">Optional hint (meal name or ingredients)</label>
+      <input type="text" id="aiHint" placeholder="e.g. grilled chicken, salad, pasta..." />
+
+      <button class="btn" id="analyzeBtn" style="display:none;">✨ Analyze with AI</button>
+
+      <div class="loading-ai" id="aiLoading">
+        <div class="spinner"></div>
+        Analyzing... please wait
+      </div>
+
+      <div class="ai-result" id="aiResult">
+        <h4>📊 Analysis Result</h4>
+        <div class="macro-row"><span>Calories</span><span id="aiCals">—</span></div>
+        <div class="macro-row"><span>Protein</span><span id="aiProtein">—</span></div>
+        <div class="macro-row"><span>Carbohydrates</span><span id="aiCarbs">—</span></div>
+        <div class="macro-row"><span>Fat</span><span id="aiFat">—</span></div>
+        <div class="macro-row"><span>Estimated Meal</span><span id="aiName">—</span></div>
+        <div class="macro-row"><span>Confidence</span><span id="aiConfidence">—</span></div>
+        <p style="font-size:12px;color:#888;margin-top:12px;text-align:center;">
+          * AI estimation for guidance only. Values may vary.
+        </p>
+        <button class="btn btn-secondary" id="saveAiMealBtn" style="margin-top:12px;">
+          💾 Save to Meals Log
+        </button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>💡 Tips for Better Results</h3>
+      <ul style="font-size:13px;color:#ccc;padding-left:18px;line-height:1.8;">
+        <li>Photograph from above (top-down view)</li>
+        <li>Use good natural or bright lighting</li>
+        <li>Include the whole plate in the frame</li>
+        <li>Add a short text hint for higher accuracy</li>
+        <li>You can always adjust the values after analysis</li>
+      </ul>
+    </div>
+
+    <p class="footer-note">GYMORA © 2026 — AI powered by on-device intelligence</p>
+  </main>
+
+  <div class="toast" id="toast"></div>
+  <script src="app.js"></script>
+  <script>
+    let currentAiPhoto = null;
+    let lastAiResult = null;
+
+    async function initIAGymPage() {
+      await Gymora.openDatabase();
+
+      document.getElementById('aiPhotoBtn').addEventListener('click', () => {
+        document.getElementById('aiPhoto').click();
+      });
+
+      document.getElementById('aiPhoto').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+          currentAiPhoto = file;
+          const reader = new FileReader();
+          reader.onload = ev => {
+            document.getElementById('aiPreview').innerHTML =
+              `<img src="${ev.target.result}" alt="meal to analyze" />`;
+            document.getElementById('analyzeBtn').style.display = 'block';
+            document.getElementById('aiResult').classList.remove('show');
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+
+      document.getElementById('analyzeBtn').addEventListener('click', runAnalysis);
+      document.getElementById('saveAiMealBtn').addEventListener('click', saveAiResultToMeals);
+    }
+
+    async function runAnalysis() {
+      const loading = document.getElementById('aiLoading');
+      const resultBox = document.getElementById('aiResult');
+      const analyzeBtn = document.getElementById('analyzeBtn');
+      const hint = document.getElementById('aiHint').value.trim();
+
+      analyzeBtn.style.display = 'none';
+      loading.classList.add('show');
+      resultBox.classList.remove('show');
+
+      try {
+        const result = await Gymora.analyzeMealWithAI(currentAiPhoto, hint);
+        lastAiResult = result;
+
+        document.getElementById('aiCals').textContent = result.cals + ' kcal';
+        document.getElementById('aiProtein').textContent = result.protein + ' g';
+        document.getElementById('aiCarbs').textContent = result.carbs + ' g';
+        document.getElementById('aiFat').textContent = result.fat + ' g';
+        document.getElementById('aiName').textContent = result.name;
+        document.getElementById('aiConfidence').textContent = result.confidence;
+
+        resultBox.classList.add('show');
+        Gymora.showToast('Analysis complete ✨');
+      } catch (err) {
+        console.error(err);
+        Gymora.showToast('Analysis failed – try again');
+        analyzeBtn.style.display = 'block';
+      } finally {
+        loading.classList.remove('show');
+      }
+    }
+
+    async function saveAiResultToMeals() {
+      if (!lastAiResult) return;
+
+      const entry = {
+        name: lastAiResult.name,
+        quantity: '1 serving',
+        day: new Date().toLocaleDateString('en-US', { weekday: 'long' }),
+        time: 'AI Analyzed',
+        calories: lastAiResult.cals,
+        photo: null,
+        date: Gymora.formatDate(),
+        timestamp: Date.now(),
+        macros: {
+          protein: lastAiResult.protein,
+          carbs: lastAiResult.carbs,
+          fat: lastAiResult.fat
+        },
+        source: 'AI'
+      };
+
+      try {
+        await Gymora.addRecord('meals', entry);
+        Gymora.showToast('Saved to Meals log ✓');
+      } catch (err) {
+        console.error(err);
+        Gymora.showToast('Could not save meal');
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initIAGymPage);
+    } else {
+      initIAGymPage();
+    }
+  </script>
+</body>
+</html>

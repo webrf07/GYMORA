@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Progress - GYMORA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Orbitron:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+  <header class="header">
+    <div class="header-top">
+      <div class="line-left"></div>
+      <div class="logo-wrap">
+        <img src="gymora-logo.jpg" alt="GYMORA Logo" />
+      </div>
+      <div class="line-right"></div>
+    </div>
+    <div class="app-title">GYMORA</div>
+  </header>
+
+  <nav class="nav-tabs">
+    <a href="index.html">Home</a>
+    <a href="workout.html">Workout</a>
+    <a href="meals.html">Meals</a>
+    <a href="progress.html" class="active">Progress</a>
+    <a href="iagym.html">IA Gym</a>
+  </nav>
+
+  <main class="content">
+    <div class="section-hero">
+      <img src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=800&h=400&fit=crop" alt="Progress" />
+      <div class="overlay"><h2>Track Your Progress</h2></div>
+    </div>
+
+    <div class="stat-row">
+      <div class="stat-box">
+        <div class="value" id="statWeight">85</div>
+        <div class="label">Current Weight (kg)</div>
+      </div>
+      <div class="stat-box">
+        <div class="value" id="statBodyFat">14%</div>
+        <div class="label">Body Fat %</div>
+      </div>
+      <div class="stat-box">
+        <div class="value" id="statWorkouts">0</div>
+        <div class="label">Workouts This Month</div>
+      </div>
+      <div class="stat-box">
+        <div class="value" id="statMax">—</div>
+        <div class="label">Max Bench (kg)</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>📈 Weight Trend (Last 8 Weeks)</h3>
+      <div class="chart-container">
+        <canvas id="weightChart"></canvas>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>💪 Bulk vs Cut</h3>
+      <div class="chart-container">
+        <canvas id="phaseChart"></canvas>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>🔄 Update Stats</h3>
+      <label>Current Weight (kg)</label>
+      <input type="number" id="newWeight" step="0.1" placeholder="85.0" />
+      <label>Body Fat %</label>
+      <input type="number" id="newBodyFat" step="0.1" placeholder="14" />
+      <button class="btn" id="updateProgressBtn">Update Progress</button>
+    </div>
+
+    <p class="footer-note">GYMORA © 2026</p>
+  </main>
+
+  <div class="toast" id="toast"></div>
+  <script src="app.js"></script>
+  <script>
+    let weightChart, phaseChart;
+
+    async function initProgressPage() {
+      await Gymora.openDatabase();
+      await loadStats();
+      initCharts();
+      document.getElementById('updateProgressBtn').addEventListener('click', updateProgress);
+    }
+
+    async function loadStats() {
+      try {
+        const workouts = await Gymora.getAllRecords('workouts');
+        const now = new Date();
+        const thisMonth = workouts.filter(w => {
+          if (!w.timestamp) return false;
+          const d = new Date(w.timestamp);
+          return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+        });
+        document.getElementById('statWorkouts').textContent = thisMonth.length;
+
+        const bench = workouts
+          .filter(w => w.equipment && w.equipment.toLowerCase().includes('bench'))
+          .map(w => w.weight || 0);
+        if (bench.length) {
+          document.getElementById('statMax').textContent = Math.max(...bench);
+        }
+
+        const progress = await Gymora.getAllRecords('progress');
+        if (progress.length) {
+          progress.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+          const latest = progress[0];
+          if (latest.weight) document.getElementById('statWeight').textContent = latest.weight;
+          if (latest.bodyFat) document.getElementById('statBodyFat').textContent = latest.bodyFat + '%';
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function initCharts() {
+      const ctx1 = document.getElementById('weightChart').getContext('2d');
+      weightChart = new Chart(ctx1, {
+        type: 'line',
+        data: {
+          labels: ['W1','W2','W3','W4','W5','W6','W7','W8'],
+          datasets: [{
+            label: 'Weight (kg)',
+            data: [88, 87.2, 86.5, 86, 85.5, 85.2, 85, 84.8],
+            borderColor: '#FFD600',
+            backgroundColor: 'rgba(255,214,0,0.1)',
+            tension: 0.35,
+            fill: true,
+            pointBackgroundColor: '#FFD600',
+            pointRadius: 5
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { ticks: { color: '#888' }, grid: { color: '#222' } },
+            y: { ticks: { color: '#888' }, grid: { color: '#222' } }
+          }
+        }
+      });
+
+      const ctx2 = document.getElementById('phaseChart').getContext('2d');
+      phaseChart = new Chart(ctx2, {
+        type: 'bar',
+        data: {
+          labels: ['Bulking', 'Cutting'],
+          datasets: [{
+            label: 'Weeks',
+            data: [12, 8],
+            backgroundColor: ['#FFD600', '#FF9800'],
+            borderRadius: 8
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { ticks: { color: '#888' }, grid: { display: false } },
+            y: { ticks: { color: '#888' }, grid: { color: '#222' }, beginAtZero: true }
+          }
+        }
+      });
+    }
+
+    async function updateProgress() {
+      const w = document.getElementById('newWeight').value;
+      const bf = document.getElementById('newBodyFat').value;
+
+      if (!w && !bf) {
+        Gymora.showToast('Enter at least one value');
+        return;
+      }
+
+      const entry = {
+        weight: w ? parseFloat(w) : null,
+        bodyFat: bf ? parseFloat(bf) : null,
+        date: Gymora.formatDate(),
+        timestamp: Date.now()
+      };
+
+      try {
+        await Gymora.addRecord('progress', entry);
+        if (w) document.getElementById('statWeight').textContent = parseFloat(w).toFixed(1);
+        if (bf) document.getElementById('statBodyFat').textContent = parseFloat(bf).toFixed(1) + '%';
+        Gymora.showToast('Progress updated ✓');
+      } catch (err) {
+        console.error(err);
+        Gymora.showToast('Error updating progress');
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initProgressPage);
+    } else {
+      initProgressPage();
+    }
+  </script>
+</body>
+</html>

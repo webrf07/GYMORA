@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>GYMORA - Modern Fitness App</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Orbitron:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-top">
+      <div class="line-left"></div>
+      <div class="logo-wrap">
+        <img src="gymora-logo.jpg" alt="GYMORA Logo" />
+      </div>
+      <div class="line-right"></div>
+    </div>
+
+    <div class="side-decor">
+      <div class="decor-item">
+        <img src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=200&h=200&fit=crop" alt="Healthy Food" />
+        <span>Healthy</span>
+      </div>
+      <div class="decor-item">
+        <img src="https://images.unsplash.com/photo-1593095948071-474c5cc2989d?w=200&h=200&fit=crop" alt="Supplements" />
+        <span>Supplements</span>
+      </div>
+      <div class="decor-item">
+        <img src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=200&h=200&fit=crop" alt="Weights" />
+        <span>Weights</span>
+      </div>
+      <div class="decor-item">
+        <img src="https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=200&h=200&fit=crop" alt="Protein" />
+        <span>Protein</span>
+      </div>
+      <div class="decor-item">
+        <img src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=200&h=200&fit=crop" alt="Training" />
+        <span>Training</span>
+      </div>
+    </div>
+
+    <div class="app-title">GYMORA</div>
+    <a href="https://example.com/gymora-download" class="download-btn" target="_blank" rel="noopener">
+      ⬇ Download the App
+    </a>
+  </header>
+
+  <!-- NAV -->
+  <nav class="nav-tabs">
+    <a href="index.html" class="active">Home</a>
+    <a href="workout.html">Workout</a>
+    <a href="meals.html">Meals</a>
+    <a href="progress.html">Progress</a>
+    <a href="iagym.html">IA Gym</a>
+  </nav>
+
+  <!-- CONTENT -->
+  <main class="content">
+    <div class="card">
+      <h3>Welcome to GYMORA</h3>
+      <p style="font-size:14px;color:#ccc;line-height:1.6;">
+        Your modern fitness companion. Track workouts, log meals, monitor progress,
+        and analyze food with AI — all in one powerful app.
+      </p>
+    </div>
+
+    <div class="features-grid">
+      <a href="workout.html" class="feature-card">
+        <div class="icon">🏋️</div>
+        <h4>Workout</h4>
+        <p>Log exercises, machines, weights & reps</p>
+      </a>
+      <a href="meals.html" class="feature-card">
+        <div class="icon">🍽️</div>
+        <h4>Meals</h4>
+        <p>Photo & track weekly meals with calories</p>
+      </a>
+      <a href="progress.html" class="feature-card">
+        <div class="icon">📈</div>
+        <h4>Progress</h4>
+        <p>Visualize strength, bulk & cut progress</p>
+      </a>
+      <a href="iagym.html" class="feature-card">
+        <div class="icon">🤖</div>
+        <h4>IA Gym</h4>
+        <p>AI-powered meal calorie analysis</p>
+      </a>
+    </div>
+
+    <div class="card" style="margin-top:18px;">
+      <h3>Why GYMORA?</h3>
+      <ul style="font-size:13px;color:#ccc;padding-left:18px;line-height:1.9;">
+        <li>Professional black & gold modern interface</li>
+        <li>Full equipment library with images</li>
+        <li>Local database – your data stays on your device</li>
+        <li>Smart AI meal analyzer</li>
+        <li>Progress charts for bulk & cut phases</li>
+      </ul>
+    </div>
+
+    <p class="footer-note">GYMORA © 2026 — Modern Fitness App</p>
+  </main>
+
+  <div class="toast" id="toast"></div>
+  <script src="app.js"></script>
+</body>
+</html>
