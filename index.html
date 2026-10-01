@@ -98,11 +98,27 @@
 
   <div class="toast" id="toast"></div>
   <script src="app.js"></script>
-  <script type="module">
+<script type="module">
   import { db } from "./firebase.js";
+  import {
+    collection,
+    addDoc,
+    serverTimestamp
+  } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
 
   window.db = db;
-  console.log("Firebase connected successfully!");
+
+  try {
+    const testRef = await addDoc(collection(db, "test"), {
+      message: "GYMORA Firebase works!",
+      createdAt: serverTimestamp()
+    });
+
+    console.log("Firebase connected!");
+    console.log("Test document ID:", testRef.id);
+  } catch (error) {
+    console.error("Firebase error:", error);
+  }
 </script>
   
 </body>
