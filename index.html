@@ -98,5 +98,12 @@
 
   <div class="toast" id="toast"></div>
   <script src="app.js"></script>
+  <script type="module">
+  import { db } from "./firebase.js";
+
+  window.db = db;
+  console.log("Firebase connected successfully!");
+</script>
+  
 </body>
 </html>
