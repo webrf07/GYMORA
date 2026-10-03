@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Login - GYMORA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Orbitron:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .auth-page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: #000;
+    }
+
+    .auth-header {
+      padding: 24px 16px 12px;
+      text-align: center;
+    }
+
+    .auth-header .header-top {
+      margin-bottom: 0;
+    }
+
+    .auth-header .logo-wrap {
+      width: 140px;
+      height: 140px;
+      margin: 0 auto;
+    }
+
+    .auth-header .app-title {
+      margin-top: 6px;
+      font-size: 20px;
+    }
+
+    .auth-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 10px 20px 30px;
+      max-width: 420px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .auth-card {
+      background: #111;
+      border: 1px solid #2a2a2a;
+      border-radius: 20px;
+      padding: 28px 22px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    }
+
+    .auth-card h2 {
+      color: var(--yellow);
+      font-size: 22px;
+      font-weight: 800;
+      text-align: center;
+      margin-bottom: 6px;
+    }
+
+    .auth-card .subtitle {
+      color: #cccccc;
+      font-size: 13px;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .auth-card label {
+      margin-top: 14px;
+      font-size: 13px;
+      color: #ffffff;
+      font-weight: 600;
+    }
+
+    .auth-card input,
+    .auth-card select {
+      width: 100%;
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 12px;
+      padding: 13px 16px;
+      color: #ffffff;
+      font-size: 15px;
+      font-family: inherit;
+      outline: none;
+      transition: border 0.2s;
+      margin-top: 4px;
+    }
+
+    .auth-card input::placeholder {
+      color: #999;
+    }
+
+    .auth-card input:focus,
+    .auth-card select:focus {
+      border-color: #FFD600;
+    }
+
+    .auth-card .btn {
+      margin-top: 24px;
+      padding: 14px;
+      font-size: 16px;
+      border-radius: 14px;
+      background: #FFD600;
+      color: #000;
+      font-weight: 800;
+    }
+
+    .auth-footer {
+      text-align: center;
+      margin-top: 22px;
+      font-size: 14px;
+      color: #ffffff;
+    }
+
+    .auth-footer a {
+      color: #FFD600;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .auth-footer a:hover {
+      text-decoration: underline;
+    }
+
+    .error-msg {
+      color: #ff5555;
+      font-size: 13px;
+      text-align: center;
+      margin-top: 12px;
+      display: none;
+    }
+
+    .error-msg.show {
+      display: block;
+    }
+
+    .success-msg {
+      color: #4caf50;
+      font-size: 13px;
+      text-align: center;
+      margin-top: 12px;
+      display: none;
+    }
+
+    .success-msg.show {
+      display: block;
+    }
+
+    .password-wrap {
+      position: relative;
+    }
+
+    .password-wrap .toggle-pass {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: #888;
+      cursor: pointer;
+      font-size: 14px;
+      padding: 0;
+      margin-top: 2px;
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-page">
+
+    <!-- Logo + yellow lines -->
+    <div class="auth-header">
+      <div class="header-top">
+        <div class="line-left"></div>
+        <div class="logo-wrap">
+          <img src="logo.png.jpg" alt="GYMORA Logo" />
+        </div>
+        <div class="line-right"></div>
+      </div>
+      <div class="app-title">GYMORA</div>
+    </div>
+
+    <!-- Login form -->
+    <div class="auth-body">
+      <div class="auth-card">
+        <h2>Welcome Back</h2>
+        <p class="subtitle">Sign in to continue your fitness journey</p>
+
+        <form id="loginForm" onsubmit="return handleLogin(event)">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" placeholder="your@email.com" required autocomplete="email" />
+
+          <label for="password">Password</label>
+          <div class="password-wrap">
+            <input type="password" id="password" name="password" placeholder="••••••••" required autocomplete="current-password" />
+            <button type="button" class="toggle-pass" onclick="togglePassword('password', this)">Show</button>
+          </div>
+
+          <button type="submit" class="btn">Sign In</button>
+        </form>
+
+        <p class="error-msg" id="loginError"></p>
+        <p class="success-msg" id="loginSuccess"></p>
+      </div>
+
+      <div class="auth-footer">
+        Don't have an account? <a href="register.html">Create Account</a>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <script src="app.js"></script>
+  <script type="module">
+  import { auth } from "./firebase.js";
+  import {
+    signInWithEmailAndPassword
+  } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+
+  window.togglePassword = function(inputId, btn) {
+    const input = document.getElementById(inputId);
+
+    if (input.type === "password") {
+      input.type = "text";
+      btn.textContent = "Hide";
+    } else {
+      input.type = "password";
+      btn.textContent = "Show";
+    }
+  };
+
+  window.handleLogin = async function(e) {
+    e.preventDefault();
+
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+
+    const errorEl = document.getElementById("loginError");
+    const successEl = document.getElementById("loginSuccess");
+
+    errorEl.classList.remove("show");
+    successEl.classList.remove("show");
+
+    if (!email || !password) {
+      errorEl.textContent = "Please fill in all fields";
+      errorEl.classList.add("show");
+      return false;
+    }
+
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+
+      successEl.textContent = "Login successful! Redirecting...";
+      successEl.classList.add("show");
+
+      setTimeout(() => {
+        window.location.href = "index.html";
+      }, 900);
+
+    } catch (error) {
+      console.error(error);
+
+      if (
+        error.code === "auth/invalid-credential" ||
+        error.code === "auth/wrong-password" ||
+        error.code === "auth/user-not-found"
+      ) {
+        errorEl.textContent = "Invalid email or password";
+      } else if (error.code === "auth/too-many-requests") {
+        errorEl.textContent = "Too many attempts. Please try again later.";
+      } else {
+        errorEl.textContent = "Login failed. Please try again.";
+      }
+
+      errorEl.classList.add("show");
+    }
+
+    return false;
+  };
+</script>
+</body>
+</html>
