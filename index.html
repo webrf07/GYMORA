@@ -99,26 +99,18 @@
   <div class="toast" id="toast"></div>
   <script src="app.js"></script>
 <script type="module">
-  import { db } from "./firebase.js";
+  import { auth } from "./firebase.js";
   import {
-    collection,
-    addDoc,
-    serverTimestamp
-  } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+    onAuthStateChanged
+  } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
 
-  window.db = db;
-
-  try {
-    const testRef = await addDoc(collection(db, "test"), {
-      message: "GYMORA Firebase works!",
-      createdAt: serverTimestamp()
-    });
-
-    console.log("Firebase connected!");
-    console.log("Test document ID:", testRef.id);
-  } catch (error) {
-    console.error("Firebase error:", error);
-  }
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      console.log("GYMORA user:", user.email);
+    } else {
+      console.log("No user is logged in.");
+    }
+  });
 </script>
   
 </body>
