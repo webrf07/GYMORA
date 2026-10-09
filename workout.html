@@ -73,105 +73,217 @@
 
   <div class="toast" id="toast"></div>
   <script src="app.js"></script>
-  <script>
-    let selectedEquipment = null;
+  
+<script type="module">
+  import { auth, db } from "./firebase.js";
+  import {
+    onAuthStateChanged
+  } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+  import {
+    collection,
+    addDoc,
+    getDocs,
+    serverTimestamp
+  } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
 
-    async function initWorkoutPage() {
-      await Gymora.openDatabase();
-      renderEquipment();
-      renderWorkouts();
+  let selectedEquipment = null;
+  let currentUser = null;
+  let authReady = false;
 
-      document.getElementById('saveWorkoutBtn').addEventListener('click', saveWorkout);
+  const $ = (id) => document.getElementById(id);
+
+  function escapeHTML(value) {
+    return String(value ?? "").replace(/[&<>"']/g, (char) => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
+    })[char]);
+  }
+
+  function showMessage(message) {
+    if (window.Gymora?.showToast) {
+      window.Gymora.showToast(message);
+    } else {
+      alert(message);
+    }
+  }
+
+  function getWorkoutCollection() {
+    if (!currentUser) {
+      throw new Error("Please sign in first.");
     }
 
-    function renderEquipment() {
-      const grid = document.getElementById('equipGrid');
-      grid.innerHTML = Gymora.EQUIPMENT.map((eq, i) => `
-        <div class="equip-item" data-index="${i}">
-          <img src="${eq.img}" alt="${eq.name}" loading="lazy"
-               onerror="this.src='https://via.placeholder.com/150x100/222/FFD600?text=${encodeURIComponent(eq.name)}'" />
-          <p>${eq.name}</p>
-        </div>
-      `).join('');
+    return collection(db, "users", currentUser.uid, "workouts");
+  }
 
-      grid.querySelectorAll('.equip-item').forEach(el => {
-        el.addEventListener('click', () => {
-          const idx = parseInt(el.dataset.index);
-          selectedEquipment = Gymora.EQUIPMENT[idx];
-          document.getElementById('selectedEquip').value = selectedEquipment.name;
-          grid.querySelectorAll('.equip-item').forEach(e => e.classList.remove('selected'));
-          el.classList.add('selected');
+  function renderEquipment() {
+    const grid = $("equipGrid");
+
+    if (!window.Gymora?.EQUIPMENT) {
+      grid.innerHTML = "<p>Equipment could not be loaded. Please refresh.</p>";
+      return;
+    }
+
+    grid.innerHTML = Gymora.EQUIPMENT.map((eq, i) => `
+      <div class="equip-item" data-index="${i}">
+        <img
+          src="${escapeHTML(eq.img)}"
+          alt="${escapeHTML(eq.name)}"
+          loading="lazy"
+          onerror="this.onerror=null;this.src='https://placehold.co/150x100/222/FFD600?text=Equipment';"
+        />
+        <p>${escapeHTML(eq.name)}</p>
+      </div>
+    `).join("");
+
+    grid.querySelectorAll(".equip-item").forEach((el) => {
+      el.addEventListener("click", () => {
+        selectedEquipment = Gymora.EQUIPMENT[Number(el.dataset.index)];
+        $("selectedEquip").value = selectedEquipment.name;
+
+        grid.querySelectorAll(".equip-item").forEach((item) => {
+          item.classList.remove("selected");
         });
+
+        el.classList.add("selected");
       });
+    });
+  }
+
+  async function saveWorkout() {
+    if (!authReady) {
+      showMessage("Please wait while your account loads.");
+      return;
     }
 
-    async function saveWorkout() {
-      const equipment = document.getElementById('selectedEquip').value;
-      const weight = document.getElementById('weightInput').value;
-      const reps = document.getElementById('repsInput').value;
-      const sets = document.getElementById('setsInput').value;
-      const notes = document.getElementById('notesInput').value;
+    if (!currentUser) {
+      showMessage("Please log in before saving workouts.");
+      window.location.href = "login.html";
+      return;
+    }
 
-      if (!equipment || !weight || !reps || !sets) {
-        Gymora.showToast('Please fill all required fields');
+    const equipment = $("selectedEquip").value.trim();
+    const weightText = $("weightInput").value;
+    const repsText = $("repsInput").value;
+    const setsText = $("setsInput").value;
+    const notes = $("notesInput").value.trim();
+
+    const weight = Number(weightText);
+    const reps = Number(repsText);
+    const sets = Number(setsText);
+
+    if (
+      !equipment ||
+      weightText === "" ||
+      repsText === "" ||
+      setsText === "" ||
+      !Number.isFinite(weight) ||
+      weight < 0 ||
+      !Number.isInteger(reps) ||
+      reps < 1 ||
+      !Number.isInteger(sets) ||
+      sets < 1
+    ) {
+      showMessage("Enter valid equipment, weight, reps and sets.");
+      return;
+    }
+
+    const button = $("saveWorkoutBtn");
+    button.disabled = true;
+
+    try {
+      const now = new Date();
+
+      await addDoc(getWorkoutCollection(), {
+        equipment,
+        weight,
+        reps,
+        sets,
+        notes,
+        date: now.toLocaleDateString("en-GB"),
+        timestamp: Date.now(),
+        createdAt: serverTimestamp()
+      });
+
+      showMessage("Workout saved to your account!");
+
+      $("weightInput").value = "";
+      $("repsInput").value = "";
+      $("setsInput").value = "";
+      $("notesInput").value = "";
+
+      await renderWorkouts();
+    } catch (error) {
+      console.error("Save workout error:", error);
+      showMessage(
+        error.code === "permission-denied"
+          ? "Permission denied. Check your Firestore rules."
+          : "Could not save workout. Check your connection and try again."
+      );
+    } finally {
+      button.disabled = false;
+    }
+  }
+
+  async function renderWorkouts() {
+    const log = $("workoutLog");
+
+    if (!currentUser) {
+      log.innerHTML =
+        '<p style="color:#999;text-align:center;">Log in to view your workout history.</p>';
+      return;
+    }
+
+    log.innerHTML =
+      '<p style="color:#999;text-align:center;">Loading workouts...</p>';
+
+    try {
+      const snapshot = await getDocs(getWorkoutCollection());
+
+      const workouts = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+
+      workouts.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+      if (workouts.length === 0) {
+        log.innerHTML =
+          '<p style="color:#666;font-size:13px;text-align:center;">No workouts saved yet.</p>';
         return;
       }
 
-      const entry = {
-        equipment,
-        weight: parseFloat(weight),
-        reps: parseInt(reps),
-        sets: parseInt(sets),
-        notes: notes || '',
-        date: Gymora.formatDate(),
-        timestamp: Date.now()
-      };
-
-      try {
-        await Gymora.addRecord('workouts', entry);
-        Gymora.showToast('Workout saved ✓');
-        document.getElementById('weightInput').value = '';
-        document.getElementById('repsInput').value = '';
-        document.getElementById('setsInput').value = '';
-        document.getElementById('notesInput').value = '';
-        renderWorkouts();
-      } catch (err) {
-        console.error(err);
-        Gymora.showToast('Error saving workout');
-      }
-    }
-
-    async function renderWorkouts() {
-      const log = document.getElementById('workoutLog');
-      try {
-        const workouts = await Gymora.getAllRecords('workouts');
-        workouts.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-
-        if (workouts.length === 0) {
-          log.innerHTML = '<p style="color:#666;font-size:13px;text-align:center;">No workouts logged yet</p>';
-          return;
-        }
-
-        log.innerHTML = workouts.slice(0, 20).map(w => `
-          <div class="log-item">
-            <div class="info">
-              <strong>${w.equipment}</strong>
-              ${w.weight} kg × ${w.reps} reps × ${w.sets} sets
-              ${w.notes ? `<br><span style="color:#888;font-size:11px;">${w.notes}</span>` : ''}
-            </div>
-            <div class="meta">${w.date}</div>
+      log.innerHTML = workouts.slice(0, 50).map((w) => `
+        <div class="log-item">
+          <div class="info">
+            <strong>${escapeHTML(w.equipment)}</strong><br>
+            ${escapeHTML(w.weight)} kg ×
+            ${escapeHTML(w.reps)} reps ×
+            ${escapeHTML(w.sets)} sets
+            ${w.notes
+              ? `<br><span style="color:#888;font-size:11px;">${escapeHTML(w.notes)}</span>`
+              : ""}
           </div>
-        `).join('');
-      } catch (err) {
-        log.innerHTML = '<p style="color:#666;font-size:13px;text-align:center;">Could not load history</p>';
-      }
+          <div class="meta">${escapeHTML(w.date || "")}</div>
+        </div>
+      `).join("");
+    } catch (error) {
+      console.error("Load workouts error:", error);
+      log.innerHTML =
+        '<p style="color:#c66;text-align:center;">Could not load workouts. Please refresh.</p>';
     }
+  }
 
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', initWorkoutPage);
-    } else {
-      initWorkoutPage();
-    }
-  </script>
+  $("saveWorkoutBtn").addEventListener("click", saveWorkout);
+  renderEquipment();
+
+  onAuthStateChanged(auth, async (user) => {
+    currentUser = user;
+    authReady = true;
+    await renderWorkouts();
+  });
+</script>
 </body>
 </html>
