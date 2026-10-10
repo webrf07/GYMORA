@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Progress - GYMORA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Orbitron:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <style>
+    .phase-selector {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 4px;
+    }
+    .phase-btn {
+      background: #1a1a1a;
+      border: 2px solid #333;
+      border-radius: 16px;
+      padding: 18px 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      color: #aaa;
+    }
+    .phase-btn .icon { font-size: 28px; margin-bottom: 6px; }
+    .phase-btn .name { font-weight: 800; font-size: 15px; color: #fff; }
+    .phase-btn .desc { font-size: 11px; margin-top: 4px; color: #888; }
+    .phase-btn.active {
+      border-color: #FFD600;
+      background: rgba(255, 214, 0, 0.08);
+      box-shadow: 0 0 20px rgba(255, 214, 0, 0.2);
+      color: #FFD600;
+    }
+    .phase-btn.active .name { color: #FFD600; }
+
+    .input-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .bf-result {
+      display: none;
+      margin-top: 16px;
+      padding: 18px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #1a1a00, #111);
+      border: 1px solid #FFD600;
+      text-align: center;
+    }
+    .bf-result.show { display: block; }
+    .bf-result .bf-value {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 42px;
+      font-weight: 800;
+      color: #FFD600;
+      line-height: 1.1;
+    }
+    .bf-result .bf-label {
+      font-size: 13px;
+      color: #ccc;
+      margin-top: 4px;
+    }
+    .bf-result .bf-category {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 5px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      background: rgba(255,214,0,0.15);
+      color: #FFD600;
+      border: 1px solid rgba(255,214,0,0.35);
+    }
+
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .metric-card {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 14px;
+      padding: 14px;
+      text-align: center;
+    }
+    .metric-card .m-val {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: #FFD600;
+    }
+    .metric-card .m-lab {
+      font-size: 11px;
+      color: #999;
+      margin-top: 3px;
+    }
+
+    .goal-bar-wrap {
+      margin-top: 14px;
+    }
+    .goal-bar-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #aaa;
+      margin-bottom: 6px;
+    }
+    .goal-bar {
+      height: 10px;
+      background: #222;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .goal-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #FFD600, #ff9800);
+      border-radius: 10px;
+      transition: width 0.6s ease;
+      width: 0%;
+    }
+
+    .insight-card {
+      background: linear-gradient(135deg, #141400, #0d0d0d);
+      border: 1px solid #333;
+      border-left: 4px solid #FFD600;
+      border-radius: 14px;
+      padding: 14px 16px;
+      margin-bottom: 10px;
+      font-size: 13px;
+      color: #ddd;
+      line-height: 1.55;
+    }
+    .insight-card strong { color: #FFD600; }
+
+    .premium-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 10px;
+      font-weight: 700;
+      color: #000;
+      background: linear-gradient(135deg, #FFD600, #e6c200);
+      padding: 3px 8px;
+      border-radius: 8px;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+
+    .history-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      background: #1a1a1a;
+      border-radius: 12px;
+      margin-bottom: 8px;
+      border-left: 3px solid #FFD600;
+    }
+    .history-item .hi-main { font-size: 13px; color: #fff; }
+    .history-item .hi-main strong { color: #FFD600; }
+    .history-item .hi-meta { font-size: 11px; color: #888; text-align: right; }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <div class="header-top">
+      <div class="line-left"></div>
+      <div class="logo-wrap">
+        <img src="gymora-logo.jpg" alt="GYMORA Logo" />
+      </div>
+      <div class="line-right"></div>
+    </div>
+    <div class="app-title">GYMORA</div>
+  </header>
+
+  <nav class="nav-tabs">
+    <a href="index.html">Home</a>
+    <a href="workout.html">Workout</a>
+    <a href="meals.html">Meals</a>
+    <a href="progress.html" class="active">Progress</a>
+    <a href="iagym.html">IA Gym</a>
+  </nav>
+
+  <main class="content">
+    <div class="section-hero">
+      <img src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=800&h=400&fit=crop" alt="Progress" />
+      <div class="overlay"><h2>Body & Progress Lab</h2></div>
+    </div>
+
+    <!-- PHASE SELECTION -->
+    <div class="card">
+      <h3>🎯 Your Current Phase</h3>
+      <div class="phase-selector">
+        <div class="phase-btn" id="phaseBulk" onclick="selectPhase('bulking')">
+          <div class="icon">💪</div>
+          <div class="name">Bulking</div>
+          <div class="desc">Build muscle & strength</div>
+        </div>
+        <div class="phase-btn" id="phaseCut" onclick="selectPhase('cutting')">
+          <div class="icon">🔥</div>
+          <div class="name">Cutting</div>
+          <div class="desc">Lose fat, keep muscle</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BODY METRICS INPUT -->
+    <div class="card">
+      <h3>📏 Body Metrics</h3>
+      <div class="input-row">
+        <div>
+          <label>Height (cm)</label>
+          <input type="number" id="heightInput" placeholder="175" min="100" max="250" step="0.1" />
+        </div>
+        <div>
+          <label>Weight (kg)</label>
+          <input type="number" id="weightInput" placeholder="80" min="30" max="250" step="0.1" />
+        </div>
+      </div>
+      <div class="input-row" style="margin-top:4px;">
+        <div>
+          <label>Age</label>
+          <input type="number" id="ageInput" placeholder="25" min="13" max="90" />
+        </div>
+        <div>
+          <label>Gender</label>
+          <select id="genderInput">
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+          </select>
+        </div>
+      </div>
+      <label>Goal Weight (kg) — optional</label>
+      <input type="number" id="goalWeightInput" placeholder="e.g. 75" min="30" max="250" step="0.1" />
+
+      <button class="btn" id="calcBtn">✨ Calculate Body Fat & Save</button>
+
+      <!-- Body Fat Result -->
+      <div class="bf-result" id="bfResult">
+        <div class="bf-value" id="bfValue">—%</div>
+        <div class="bf-label">Estimated Body Fat</div>
+        <div class="bf-category" id="bfCategory">—</div>
+
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="m-val" id="bmiValue">—</div>
+            <div class="m-lab">BMI</div>
+          </div>
+          <div class="metric-card">
+            <div class="m-val" id="lbmValue">—</div>
+            <div class="m-lab">Lean Mass (kg)</div>
+          </div>
+          <div class="metric-card">
+            <div class="m-val" id="fatMassValue">—</div>
+            <div class="m-lab">Fat Mass (kg)</div>
+          </div>
+          <div class="metric-card">
+            <div class="m-val" id="idealWeight">—</div>
+            <div class="m-lab">Ideal Range</div>
+          </div>
+        </div>
+
+        <div class="goal-bar-wrap" id="goalBarWrap" style="display:none;">
+          <div class="goal-bar-labels">
+            <span>Current: <strong id="goalCurrent" style="color:#FFD600">—</strong></span>
+            <span>Goal: <strong id="goalTarget" style="color:#FFD600">—</strong></span>
+          </div>
+          <div class="goal-bar"><div class="goal-bar-fill" id="goalBarFill"></div></div>
+          <p style="font-size:12px;color:#aaa;margin-top:8px;" id="goalEta">—</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- SMART INSIGHTS -->
+    <div class="card">
+      <h3>🧠 Smart Insights <span class="premium-badge">PRO</span></h3>
+      <div id="insightsList">
+        <p style="color:#666;font-size:13px;text-align:center;">Calculate your metrics to unlock personalized insights</p>
+      </div>
+    </div>
+
+    <!-- YEARLY CHART -->
+    <div class="card">
+      <h3>📈 Yearly Weight Curve</h3>
+      <p style="font-size:12px;color:#888;margin-bottom:8px;">Your progress across the year</p>
+      <div class="chart-container">
+        <canvas id="yearChart"></canvas>
+      </div>
+    </div>
+
+    <!-- BODY FAT CHART -->
+    <div class="card">
+      <h3>📉 Body Fat Trend</h3>
+      <div class="chart-container">
+        <canvas id="bfChart"></canvas>
+      </div>
+    </div>
+
+    <!-- QUICK STATS -->
+    <div class="stat-row" id="quickStats" style="display:none;">
+      <div class="stat-box">
+        <div class="value" id="statPhase">—</div>
+        <div class="label">Active Phase</div>
+      </div>
+      <div class="stat-box">
+        <div class="value" id="statEntries">0</div>
+        <div class="label">Logged Entries</div>
+      </div>
+      <div class="stat-box">
+        <div class="value" id="statChange">—</div>
+        <div class="label">Weight Change</div>
+      </div>
+      <div class="stat-box">
+        <div class="value" id="statWorkouts">0</div>
+        <div class="label">Workouts / Month</div>
+      </div>
+    </div>
+
+    <!-- HISTORY -->
+    <div class="card">
+      <h3>📅 Check-in History</h3>
+      <div id="historyList">
+        <p style="color:#666;font-size:13px;text-align:center;">No entries yet — log your first metrics above</p>
+      </div>
+    </div>
+
+    <p class="footer-note">GYMORA © 2026 — Body composition estimates are approximate</p>
+  </main>
+
+  <div class="toast" id="toast"></div>
+  <script src="app.js"></script>
+  <script>
+    let selectedPhase = null;
+    let yearChart = null;
+    let bfChart = null;
+
+    function estimateBodyFat(weightKg, heightCm, age, gender) {
+      const heightM = heightCm / 100;
+      const bmi = weightKg / (heightM * heightM);
+      const sex = gender === 'male' ? 1 : 0;
+      let bf = (1.20 * bmi) + (0.23 * age) - (10.8 * sex) - 5.4;
+      bf = Math.max(3, Math.min(50, bf));
+      return {
+        bf: Math.round(bf * 10) / 10,
+        bmi: Math.round(bmi * 10) / 10,
+        leanMass: Math.round(weightKg * (1 - bf / 100) * 10) / 10,
+        fatMass: Math.round(weightKg * (bf / 100) * 10) / 10
+      };
+    }
+
+    function bfCategory(bf, gender) {
+      if (gender === 'male') {
+        if (bf < 6) return 'Essential';
+        if (bf < 14) return 'Athletic';
+        if (bf < 18) return 'Fitness';
+        if (bf < 25) return 'Average';
+        return 'Above Average';
+      } else {
+        if (bf < 14) return 'Essential';
+        if (bf < 21) return 'Athletic';
+        if (bf < 25) return 'Fitness';
+        if (bf < 32) return 'Average';
+        return 'Above Average';
+      }
+    }
+
+    function idealWeightRange(heightCm, gender) {
+      let base = gender === 'male'
+        ? 50 + 2.3 * ((heightCm - 152.4) / 2.54)
+        : 45.5 + 2.3 * ((heightCm - 152.4) / 2.54);
+      const low = Math.round((base - 3) * 10) / 10;
+      const high = Math.round((base + 5) * 10) / 10;
+      return low + '–' + high;
+    }
+
+    function selectPhase(phase) {
+      selectedPhase = phase;
+      document.getElementById('phaseBulk').classList.toggle('active', phase === 'bulking');
+      document.getElementById('phaseCut').classList.toggle('active', phase === 'cutting');
+    }
+
+    async function calculateAndSave() {
+      const height = parseFloat(document.getElementById('heightInput').value);
+      const weight = parseFloat(document.getElementById('weightInput').value);
+      const age = parseInt(document.getElementById('ageInput').value);
+      const gender = document.getElementById('genderInput').value;
+      const goalWeight = parseFloat(document.getElementById('goalWeightInput').value) || null;
+
+      if (!selectedPhase) {
+        Gymora.showToast('Please select Bulking or Cutting');
+        return;
+      }
+      if (!height || !weight || !age) {
+        Gymora.showToast('Please fill height, weight and age');
+        return;
+      }
+
+      const result = estimateBodyFat(weight, height, age, gender);
+      const category = bfCategory(result.bf, gender);
+      const ideal = idealWeightRange(height, gender);
+
+      document.getElementById('bfValue').textContent = result.bf + '%';
+      document.getElementById('bfCategory').textContent = category;
+      document.getElementById('bmiValue').textContent = result.bmi;
+      document.getElementById('lbmValue').textContent = result.leanMass;
+      document.getElementById('fatMassValue').textContent = result.fatMass;
+      document.getElementById('idealWeight').textContent = ideal;
+      document.getElementById('bfResult').classList.add('show');
+
+      if (goalWeight) {
+        document.getElementById('goalBarWrap').style.display = 'block';
+        document.getElementById('goalCurrent').textContent = weight + ' kg';
+        document.getElementById('goalTarget').textContent = goalWeight + ' kg';
+        const diff = Math.abs(weight - goalWeight);
+        const pct = Math.max(5, Math.min(95, 100 - diff * 4));
+        document.getElementById('goalBarFill').style.width = pct + '%';
+        const weeklyRate = selectedPhase === 'cutting' ? 0.5 : 0.3;
+        const weeks = Math.ceil(diff / weeklyRate);
+        document.getElementById('goalEta').textContent =
+          diff < 0.3
+            ? '🎉 You are at your goal weight!'
+            : `⏱ Estimated ${weeks} weeks at ${weeklyRate} kg/week to reach goal`;
+      } else {
+        document.getElementById('goalBarWrap').style.display = 'none';
+      }
+
+      renderInsights(result, weight, height, age, gender, goalWeight);
+
+      const entry = {
+        phase: selectedPhase,
+        height,
+        weight,
+        age,
+        gender,
+        bodyFat: result.bf,
+        bmi: result.bmi,
+        leanMass: result.leanMass,
+        fatMass: result.fatMass,
+        goalWeight,
+        date: Gymora.formatDate(),
+        timestamp: Date.now(),
+        month: new Date().getMonth()
+      };
+
+      try {
+        await Gymora.addRecord('progress', entry);
+        Gymora.showToast('Progress saved ✓');
+        await refreshUI();
+      } catch (err) {
+        console.error(err);
+        Gymora.showToast('Could not save — try again');
+      }
+    }
+
+    function renderInsights(result, weight, height, age, gender, goalWeight) {
+      const list = document.getElementById('insightsList');
+      const bmr = gender === 'male'
+        ? 10 * weight + 6.25 * height - 5 * age + 5
+        : 10 * weight + 6.25 * height - 5 * age - 161;
+      const tdee = Math.round(bmr * 1.55);
+      const protein = Math.round(weight * (selectedPhase === 'bulking' ? 2.0 : 2.2));
+      const calories = selectedPhase === 'bulking' ? tdee + 300 : tdee - 400;
+
+      let tips = [];
+      tips.push(`Based on your stats, estimated daily calories for <strong>${selectedPhase}</strong>: <strong>${calories} kcal</strong> (TDEE ~${tdee}).`);
+      tips.push(`Aim for <strong>${protein}g protein/day</strong> to protect & build muscle during your ${selectedPhase} phase.`);
+
+      if (result.bf > (gender === 'male' ? 20 : 28)) {
+        tips.push(`Your body fat is on the higher side. A controlled <strong>cutting phase</strong> with strength training will improve composition.`);
+      } else if (result.bf < (gender === 'male' ? 10 : 18)) {
+        tips.push(`You're already lean. Focus on <strong>progressive overload</strong> and adequate surplus if bulking.`);
+      } else {
+        tips.push(`Solid body composition. Stay consistent — small weekly changes compound into big yearly results.`);
+      }
+
+      if (goalWeight) {
+        const diff = Math.abs(weight - goalWeight);
+        const rate = selectedPhase === 'cutting' ? 0.5 : 0.3;
+        tips.push(`To reach <strong>${goalWeight} kg</strong>, target ~<strong>${rate} kg/week</strong>. That's about <strong>${Math.ceil(diff / rate)} weeks</strong> of disciplined work.`);
+      }
+
+      tips.push(`Track weight at the same time each week (e.g. morning, fasted) for the most accurate yearly curve.`);
+      list.innerHTML = tips.map(t => `<div class="insight-card">${t}</div>`).join('');
+    }
+
+    async function refreshUI() {
+      const records = await Gymora.getAllRecords('progress');
+      records.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+
+      document.getElementById('quickStats').style.display = records.length ? 'grid' : 'none';
+      document.getElementById('statEntries').textContent = records.length;
+      if (records.length) {
+        const last = records[records.length - 1];
+        document.getElementById('statPhase').textContent = last.phase === 'bulking' ? 'Bulk' : 'Cut';
+        if (records.length >= 2) {
+          const first = records[0];
+          const change = (last.weight - first.weight).toFixed(1);
+          document.getElementById('statChange').textContent = (change > 0 ? '+' : '') + change + ' kg';
+        } else {
+          document.getElementById('statChange').textContent = '—';
+        }
+      }
+
+      try {
+        const workouts = await Gymora.getAllRecords('workouts');
+        const now = new Date();
+        const count = workouts.filter(w => {
+          if (!w.timestamp) return false;
+          const d = new Date(w.timestamp);
+          return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+        }).length;
+        document.getElementById('statWorkouts').textContent = count;
+      } catch (_) {}
+
+      const hist = document.getElementById('historyList');
+      if (!records.length) {
+        hist.innerHTML = '<p style="color:#666;font-size:13px;text-align:center;">No entries yet — log your first metrics above</p>';
+      } else {
+        const reversed = [...records].reverse();
+        hist.innerHTML = reversed.slice(0, 12).map(r => `
+          <div class="history-item">
+            <div class="hi-main">
+              <strong>${r.weight} kg</strong> · ${r.bodyFat}% BF
+              <br><span style="color:#888;font-size:11px;">${r.phase === 'bulking' ? '💪 Bulk' : '🔥 Cut'} · BMI ${r.bmi}</span>
+            </div>
+            <div class="hi-meta">${r.date || ''}</div>
+          </div>
+        `).join('');
+      }
+
+      updateCharts(records);
+    }
+
+    function updateCharts(records) {
+      const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      const weightByMonth = new Array(12).fill(null);
+      const bfByMonth = new Array(12).fill(null);
+
+      records.forEach(r => {
+        const d = new Date(r.timestamp || Date.now());
+        const m = d.getMonth();
+        weightByMonth[m] = r.weight;
+        bfByMonth[m] = r.bodyFat;
+      });
+
+      const ctx1 = document.getElementById('yearChart').getContext('2d');
+      if (yearChart) yearChart.destroy();
+      yearChart = new Chart(ctx1, {
+        type: 'line',
+        data: {
+          labels: months,
+          datasets: [{
+            label: 'Weight (kg)',
+            data: weightByMonth,
+            borderColor: '#FFD600',
+            backgroundColor: 'rgba(255,214,0,0.12)',
+            tension: 0.35,
+            fill: true,
+            pointBackgroundColor: '#FFD600',
+            pointRadius: 5,
+            spanGaps: true
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { ticks: { color: '#888' }, grid: { color: '#222' } },
+            y: { ticks: { color: '#888' }, grid: { color: '#222' } }
+          }
+        }
+      });
+
+      const ctx2 = document.getElementById('bfChart').getContext('2d');
+      if (bfChart) bfChart.destroy();
+      bfChart = new Chart(ctx2, {
+        type: 'line',
+        data: {
+          labels: months,
+          datasets: [{
+            label: 'Body Fat %',
+            data: bfByMonth,
+            borderColor: '#ff9800',
+            backgroundColor: 'rgba(255,152,0,0.12)',
+            tension: 0.35,
+            fill: true,
+            pointBackgroundColor: '#ff9800',
+            pointRadius: 5,
+            spanGaps: true
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { ticks: { color: '#888' }, grid: { color: '#222' } },
+            y: { ticks: { color: '#888' }, grid: { color: '#222' } }
+          }
+        }
+      });
+    }
+
+    async function init() {
+      await Gymora.openDatabase();
+      document.getElementById('calcBtn').addEventListener('click', calculateAndSave);
+
+      try {
+        const records = await Gymora.getAllRecords('progress');
+        if (records.length) {
+          records.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+          const last = records[0];
+          if (last.height) document.getElementById('heightInput').value = last.height;
+          if (last.weight) document.getElementById('weightInput').value = last.weight;
+          if (last.age) document.getElementById('ageInput').value = last.age;
+          if (last.gender) document.getElementById('genderInput').value = last.gender;
+          if (last.goalWeight) document.getElementById('goalWeightInput').value = last.goalWeight;
+          if (last.phase) selectPhase(last.phase);
+        }
+      } catch (_) {}
+
+      await refreshUI();
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  </script>
+</body>
+</html>
