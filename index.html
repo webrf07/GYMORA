@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GYMORA | Dashboard</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+
+        <a href="index.html" class="logo">
+            <div class="logo-icon">
+                <i class="fa-solid fa-dumbbell"></i>
+            </div>
+            <span>GYM<span class="green">ORA</span></span>
+        </a>
+
+        <nav class="navigation">
+
+            <a href="index.html" class="nav-item active">
+                <i class="fa-solid fa-house"></i>
+                <span>Home</span>
+            </a>
+
+            <a href="workouts.html" class="nav-item">
+                <i class="fa-solid fa-dumbbell"></i>
+                <span>Workouts</span>
+            </a>
+
+            <a href="nutrition.html" class="nav-item">
+                <i class="fa-solid fa-apple-whole"></i>
+                <span>Nutrition</span>
+            </a>
+
+            <a href="progress.html" class="nav-item">
+                <i class="fa-solid fa-chart-line"></i>
+                <span>Progress</span>
+            </a>
+
+            <a href="ai-gym.html" class="nav-item ai-link">
+                <i class="fa-solid fa-robot"></i>
+                <span>AI Gym</span>
+                <span class="ai-badge">AI</span>
+            </a>
+
+            <a href="community.html" class="nav-item">
+                <i class="fa-solid fa-users"></i>
+                <span>Community</span>
+            </a>
+
+            <a href="settings.html" class="nav-item">
+                <i class="fa-solid fa-gear"></i>
+                <span>Settings</span>
+            </a>
+
+            <a href="profile.html" class="nav-item">
+                <i class="fa-solid fa-user"></i>
+                <span>Profile</span>
+            </a>
+
+        </nav>
+
+        <div class="sidebar-quote">
+            <span class="quote-label">YOUR MINDSET</span>
+            <h2>No Pain.<br>No Gain. 💪</h2>
+            <div class="quote-line"></div>
+            <small>BETTER THAN YESTERDAY</small>
+        </div>
+
+        <div class="sidebar-footer">
+            GYMORA <span>© 2026</span>
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN -->
+    <main class="main">
+
+        <!-- TOPBAR -->
+        <header class="topbar">
+
+            <button class="menu-button" id="menuButton">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+
+            <div class="search">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="search" placeholder="Search workouts, exercises...">
+            </div>
+
+            <div class="top-right">
+
+                <button class="notification">
+                    <i class="fa-regular fa-bell"></i>
+                    <span></span>
+                </button>
+
+                <a href="profile.html" class="user">
+                    <div class="avatar">R</div>
+                    <span>Raouf</span>
+                    <i class="fa-solid fa-chevron-down"></i>
+                </a>
+
+            </div>
+
+        </header>
+
+
+        <!-- HERO -->
+        <section class="hero">
+
+            <div class="hero-content">
+
+                <span class="hero-label">
+                    DISCIPLINE <b>•</b> CONSISTENCY <b>•</b> RESULTS
+                </span>
+
+                <h1>
+                    Welcome back,<br>
+                    <span>Raouf</span> 👋
+                </h1>
+
+                <p>
+                    Keep pushing your limits.
+                    Your stronger self is built one workout at a time.
+                </p>
+
+                <a href="workouts.html" class="primary-button">
+                    Start Workout
+                    <i class="fa-solid fa-play"></i>
+                </a>
+
+            </div>
+
+            <div class="hero-athlete"></div>
+
+            <div class="hero-stats">
+
+                <div class="stat">
+                    <div class="stat-icon orange">
+                        <i class="fa-solid fa-fire"></i>
+                    </div>
+                    <div>
+                        <small>Calories</small>
+                        <h3>480 <small>kcal</small></h3>
+                    </div>
+                </div>
+
+                <div class="stat">
+                    <div class="stat-icon">
+                        <i class="fa-solid fa-dumbbell"></i>
+                    </div>
+                    <div>
+                        <small>Workout Time</small>
+                        <h3>1h 15m</h3>
+                    </div>
+                </div>
+
+                <div class="stat">
+                    <div class="stat-icon gold">
+                        <i class="fa-solid fa-trophy"></i>
+                    </div>
+                    <div>
+                        <small>Level</small>
+                        <h3>Pro</h3>
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- DASHBOARD GRID -->
+        <section class="dashboard-grid">
+
+            <!-- TODAY WORKOUT -->
+            <article class="card workout-card">
+
+                <div class="card-heading">
+                    <h2>
+                        <i class="fa-regular fa-calendar"></i>
+                        Your Plan
+                    </h2>
+
+                    <a href="workouts.html">
+                        View All <i class="fa-solid fa-arrow-right"></i>
+                    </a>
+                </div>
+
+                <div class="today-workout">
+
+                    <div class="workout-info">
+
+                        <span class="today-badge">TODAY</span>
+
+                        <h3>Upper Body<br>Strength</h3>
+
+                        <div class="workout-details">
+                            <span>
+                                <i class="fa-solid fa-dumbbell"></i>
+                                5 Exercises
+                            </span>
+
+                            <span>
+                                <i class="fa-regular fa-clock"></i>
+                                45 min
+                            </span>
+                        </div>
+
+                        <a href="workouts.html#today-workout"
+                           class="small-button">
+                            Start Now
+                            <i class="fa-solid fa-play"></i>
+                        </a>
+
+                    </div>
+
+                    <div class="workout-person"></div>
+
+                </div>
+
+            </article>
+
+
+            <!-- PROGRESS -->
+            <article class="card progress-card">
+
+                <div class="card-heading">
+                    <h2>
+                        <i class="fa-solid fa-chart-line"></i>
+                        Your Progress
+                    </h2>
+
+                    <a href="progress.html">
+                        View Details
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </a>
+                </div>
+
+                <a href="progress.html" class="progress-content">
+
+                    <div class="progress-ring">
+                        <div class="ring-inner">
+                            <h3>78%</h3>
+                            <span>Weekly Goal</span>
+                        </div>
+                    </div>
+
+                    <div class="chart">
+
+                        <div class="chart-bars">
+                            <div class="bar" style="--height:42%">
+                                <span>Mon</span>
+                            </div>
+
+                            <div class="bar" style="--height:67%">
+                                <span>Tue</span>
+                            </div>
+
+                            <div class="bar muted" style="--height:54%">
+                                <span>Wed</span>
+                            </div>
+
+                            <div class="bar" style="--height:88%">
+                                <span>Thu</span>
+                            </div>
+
+                            <div class="bar muted" style="--height:55%">
+                                <span>Fri</span>
+                            </div>
+
+                            <div class="bar" style="--height:68%">
+                                <span>Sat</span>
+                            </div>
+
+                            <div class="bar" style="--height:88%">
+                                <span>Sun</span>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </a>
+
+            </article>
+
+
+            <!-- NUTRITION -->
+            <article class="card nutrition-card">
+
+                <div class="card-heading">
+                    <h2>
+                        <i class="fa-solid fa-apple-whole"></i>
+                        Nutrition Tips
+                    </h2>
+                </div>
+
+                <div class="nutrition-content">
+
+                    <div class="food-image">🥗</div>
+
+                    <div>
+                        <h3>Eat clean,<br>train mean!</h3>
+
+                        <p>Fuel your body. Reach your goals.</p>
+
+                        <a href="nutrition.html">
+                            Learn More
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+                    </div>
+
+                </div>
+
+            </article>
+
+
+            <!-- QUICK ACTIONS -->
+            <article class="card actions-card">
+
+                <div class="card-heading">
+                    <h2>
+                        <i class="fa-solid fa-bolt"></i>
+                        Quick Actions
+                    </h2>
+                </div>
+
+                <div class="quick-actions">
+
+                    <a href="workouts.html#log-workout">
+                        <i class="fa-solid fa-dumbbell"></i>
+                        <span>Log Workout</span>
+                    </a>
+
+                    <a href="nutrition.html#track-food">
+                        <i class="fa-solid fa-apple-whole"></i>
+                        <span>Track Food</span>
+                    </a>
+
+                    <a href="progress.html">
+                        <i class="fa-solid fa-chart-column"></i>
+                        <span>View Stats</span>
+                    </a>
+
+                    <a href="settings.html">
+                        <i class="fa-solid fa-gear"></i>
+                        <span>Settings</span>
+                    </a>
+
+                </div>
+
+            </article>
+
+
+            <!-- AI GYM CARD -->
+            <a href="ai-gym.html" class="card ai-card">
+
+                <div class="ai-card-content">
+                    <span class="ai-icon">
+                        <i class="fa-solid fa-robot"></i>
+                    </span>
+
+                    <span class="ai-label">YOUR PERSONAL AI COACH</span>
+
+                    <h2>A stronger you<br>is waiting...</h2>
+
+                    <span class="ai-action">
+                        MEET AI GYM
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </span>
+                </div>
+
+            </a>
+
+        </section>
+
+
+        <footer class="footer">
+            <span>© 2026 GYMORA</span>
+            <span>TRAIN SMART. LIVE STRONG.</span>
+        </footer>
+
+    </main>
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
