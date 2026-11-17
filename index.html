@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#000000">
+  <title>GYMORA - Train • Progress • Be Stronger</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+  <!-- SPLASH SCREEN -->
+  <div id="splash-screen" class="screen active">
+    <div class="splash-content">
+      <div class="logo-container">
+        <!-- PLACEHOLDER FOR LOGO IMAGE - Replace src with your logo file -->
+        <img src="assets/logo.png" alt="GYMORA Logo" class="splash-logo" onerror="this.onerror=null; this.src='assets/logo.svg'; this.onerror=function(){this.style.display='none'; this.nextElementSibling.style.display='flex';};">
+        <div class="logo-fallback" style="display:none;">
+          <div class="logo-icon">
+            <i class="fas fa-dumbbell"></i>
+          </div>
+        </div>
+      </div>
+      <h1 class="brand-name">GYMORA</h1>
+      <p class="tagline">Train • Progress • Be Stronger</p>
+      <div class="loading-spinner"></div>
+      <p class="loading-text">Loading...</p>
+    </div>
+  </div>
+
+  <!-- MAIN APP -->
+  <div id="app" class="app-container">
+    <!-- SIDE MENU (OVERLAY) -->
+    <div id="side-menu" class="side-menu">
+      <div class="side-menu-header">
+        <div class="side-logo">
+          <img src="assets/logo.png" alt="GYMORA" class="side-logo-img" onerror="this.onerror=null; this.src='assets/logo.svg'; this.onerror=function(){this.style.display='none';};">
+          <span class="side-brand">GYMORA</span>
+        </div>
+        <button class="close-menu-btn" onclick="toggleSideMenu()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <nav class="side-nav">
+        <a href="#" class="side-link active" data-screen="home" onclick="navigateTo('home'); toggleSideMenu();">
+          <i class="fas fa-home"></i> Home
+        </a>
+        <a href="#" class="side-link" data-screen="workouts" onclick="navigateTo('workouts'); toggleSideMenu();">
+          <i class="fas fa-dumbbell"></i> Workouts
+        </a>
+        <a href="#" class="side-link" data-screen="progress" onclick="navigateTo('progress'); toggleSideMenu();">
+          <i class="fas fa-chart-line"></i> Progress
+        </a>
+        <a href="#" class="side-link" data-screen="nutrition" onclick="navigateTo('nutrition'); toggleSideMenu();">
+          <i class="fas fa-apple-alt"></i> Nutrition
+        </a>
+        <a href="#" class="side-link" data-screen="ai-coach" onclick="navigateTo('ai-coach'); toggleSideMenu();">
+          <i class="fas fa-robot"></i> AI Gym Coach
+        </a>
+        <a href="#" class="side-link" data-screen="profile" onclick="navigateTo('profile'); toggleSideMenu();">
+          <i class="fas fa-user"></i> Profile
+        </a>
+        <div class="side-divider"></div>
+        <a href="#" class="side-link">
+          <i class="fas fa-cog"></i> Settings
+        </a>
+        <a href="#" class="side-link">
+          <i class="fas fa-question-circle"></i> Help & Support
+        </a>
+        <a href="#" class="side-link logout">
+          <i class="fas fa-sign-out-alt"></i> Log Out
+        </a>
+      </nav>
+      <div class="side-footer">
+        <p>Stronger Every Day 💪</p>
+      </div>
+    </div>
+    <div id="menu-overlay" class="menu-overlay" onclick="toggleSideMenu()"></div>
+
+    <!-- HOME SCREEN -->
+    <section id="home-screen" class="screen-content active">
+      <header class="app-header">
+        <button class="menu-btn" onclick="toggleSideMenu()">
+          <i class="fas fa-bars"></i>
+        </button>
+        <div class="header-logo">
+          <img src="assets/logo.png" alt="GYMORA" class="header-logo-img" onerror="this.onerror=null; this.src='assets/logo.svg'; this.onerror=function(){this.style.display='none'; this.nextElementSibling.style.display='inline';};">
+          <span class="header-brand" style="display:none;">GYMORA</span>
+        </div>
+        <div class="header-actions">
+          <button class="icon-btn">
+            <i class="fas fa-bell"></i>
+          </button>
+          <div class="avatar" onclick="navigateTo('profile')">
+            <img src="https://ui-avatars.com/api/?name=Raouf+Ben&background=1a1a1a&color=39FF14&bold=true" alt="Raouf">
+          </div>
+        </div>
+      </header>
+
+      <div class="content-scroll">
+        <!-- Welcome Card -->
+        <div class="welcome-card">
+          <div class="welcome-text">
+            <h2>Welcome back,<br><span class="user-name">Raouf</span> 👋</h2>
+            <p>Keep pushing your limits!</p>
+          </div>
+          <button class="start-workout-btn" onclick="navigateTo('workouts')">
+            Start Workout <i class="fas fa-play"></i>
+          </button>
+        </div>
+
+        <!-- Today's Plan -->
+        <div class="section-header">
+          <h3><i class="fas fa-calendar-day"></i> Today's Plan</h3>
+          <a href="#" class="view-all" onclick="navigateTo('workouts')">View All</a>
+        </div>
+        <div class="today-plan-card">
+          <div class="plan-image">
+            <img src="https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=400&h=300&fit=crop" alt="Upper Body">
+          </div>
+          <div class="plan-info">
+            <span class="plan-tag">Today</span>
+            <h4>Upper Body Strength</h4>
+            <p><i class="fas fa-dumbbell"></i> 5 Exercises · <i class="fas fa-clock"></i> 45 min</p>
+            <button class="start-now-btn" onclick="openExercise('upper-body')">
+              Start Now <i class="fas fa-play"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Your Progress -->
+        <div class="section-header">
+          <h3><i class="fas fa-chart-pie"></i> Your Progress</h3>
+          <a href="#" class="view-all" onclick="navigateTo('progress')">View Details</a>
+        </div>
+        <div class="progress-card">
+          <div class="progress-circle-container">
+            <svg class="progress-ring" width="100" height="100">
+              <circle class="progress-ring-bg" cx="50" cy="50" r="42"></circle>
+              <circle class="progress-ring-circle" cx="50" cy="50" r="42" stroke-dasharray="264" stroke-dashoffset="58"></circle>
+            </svg>
+            <div class="progress-percent">
+              <span class="percent-value">78%</span>
+              <span class="percent-label">Weekly Goal</span>
+            </div>
+          </div>
+          <div class="progress-bars">
+            <div class="day-bar">
+              <div class="bar" style="height: 40%"></div>
+              <span>Mon</span>
+            </div>
+            <div class="day-bar">
+              <div class="bar" style="height: 65%"></div>
+              <span>Tue</span>
+            </div>
+            <div class="day-bar">
+              <div class="bar" style="height: 50%"></div>
+              <span>Wed</span>
+            </div>
+            <div class="day-bar">
+              <div class="bar active" style="height: 80%"></div>
+              <span>Thu</span>
+            </div>
+            <div class="day-bar">
+              <div class="bar" style="height: 30%"></div>
+              <span>Fri</span>
+            </div>
+            <div class="day-bar">
+              <div class="bar" style="height: 55%"></div>
+              <span>Sat</span>
+            </div>
+            <div class="day-bar">
+              <div class="bar" style="height: 20%"></div>
+              <span>Sun</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+          <div class="action-card nutrition" onclick="navigateTo('nutrition')">
+            <i class="fas fa-utensils"></i>
+            <span>Nutrition Tips</span>
+            <small>Eat clean, Train mean!</small>
+          </div>
+          <div class="action-card">
+            <i class="fas fa-plus-circle"></i>
+            <span>Log Workout</span>
+          </div>
+          <div class="action-card">
+            <i class="fas fa-chart-bar"></i>
+            <span>View Stats</span>
+          </div>
+          <div class="action-card" onclick="navigateTo('profile')">
+            <i class="fas fa-cog"></i>
+            <span>Settings</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- WORKOUTS SCREEN -->
+    <section id="workouts-screen" class="screen-content">
+      <header class="app-header">
+        <button class="menu-btn" onclick="toggleSideMenu()">
+          <i class="fas fa-bars"></i>
+        </button>
+        <h2 class="header-title">Workouts</h2>
+        <div class="header-actions">
+          <button class="icon-btn">
+            <i class="fas fa-search"></i>
+          </button>
+        </div>
+      </header>
+
+      <div class="content-scroll">
+        <p class="screen-subtitle">Choose your workout plan</p>
+        
+        <div class="category-tabs">
+          <button class="cat-tab active" data-cat="all">All</button>
+          <button class="cat-tab" data-cat="chest">Chest</button>
+          <button class="cat-tab" data-cat="back">Back</button>
+          <button class="cat-tab" data-cat="legs">Legs</button>
+          <button class="cat-tab" data-cat="arms">Arms</button>
+        </div>
+
+        <div class="workouts-list">
+          <div class="workout-item" data-category="chest" onclick="openExercise('chest')">
+            <div class="workout-img">
+              <img src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=200&h=150&fit=crop" alt="Chest">
+            </div>
+            <div class="workout-info">
+              <h4>Chest Workout</h4>
+              <p>6 Exercises · 30 min</p>
+            </div>
+            <i class="fas fa-chevron-right"></i>
+          </div>
+
+          <div class="workout-item" data-category="back" onclick="openExercise('back')">
+            <div class="workout-img">
+              <img src="https://images.unsplash.com/photo-1605296867304-46d5465a13f1?w=200&h=150&fit=crop" alt="Back">
+            </div>
+            <div class="workout-info">
+              <h4>Back Workout</h4>
+              <p>6 Exercises · 30 min</p>
+            </div>
+            <i class="fas fa-chevron-right"></i>
+          </div>
+
+          <div class="workout-item" data-category="legs" onclick="openExercise('legs')">
+            <div class="workout-img">
+              <img src="https://images.unsplash.com/photo-1434682881908-b43d0467b798?w=200&h=150&fit=crop" alt="Legs">
+            </div>
+            <div class="workout-info">
+              <h4>Legs Workout</h4>
+              <p>6 Exercises · 35 min</p>
+            </div>
+            <i class="fas fa-chevron-right"></i>
+          </div>
+
+          <div class="workout-item" data-category="all" onclick="openExercise('fullbody')">
+            <div class="workout-img">
+              <img src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=200&h=150&fit=crop" alt="Full Body">
+            </div>
+            <div class="workout-info">
+              <h4>Full Body</h4>
+              <p>8 Exercises · 45 min</p>
+            </div>
+            <i class="fas fa-chevron-right"></i>
+          </div>
+
+          <div class="workout-item" data-category="arms" onclick="openExercise('arms')">
+            <div class="workout-img">
+              <img src="https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=200&h=150&fit=crop" alt="Arms">
+            </div>
+            <div class="workout-info">
+              <h4>Arms Workout</h4>
+              <p>6 Exercises · 30 min</p>
+            </div>
+            <i class="fas fa-chevron-right"></i>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- EXERCISE DETAIL SCREEN -->
+    <section id="exercise-screen" class="screen-content">
+      <header class="app-header transparent">
+        <button class="back-btn" onclick="navigateTo('workouts')">
+          <i class="fas fa-arrow-left"></i>
+        </button>
+        <button class="icon-btn">
+          <i class="fas fa-bookmark"></i>
+        </button>
+      </header>
+
+      <div class="exercise-hero">
+        <img src="https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=600&h=400&fit=crop" alt="Bicep Curl" id="exercise-image">
+        <div class="exercise-overlay"></div>
+      </div>
+
+      <div class="exercise-details">
+        <h2 id="exercise-title">Bicep Curl</h2>
+        <p class="muscle-group" id="exercise-muscle">Biceps</p>
+        <p class="exercise-desc" id="exercise-desc">A classic exercise to build bigger biceps.</p>
+
+        <div class="exercise-stats">
+          <div class="stat">
+            <i class="fas fa-layer-group"></i>
+            <span>3 Sets</span>
+          </div>
+          <div class="stat">
+            <i class="fas fa-redo"></i>
+            <span>12 Reps</span>
+          </div>
+          <div class="stat">
+            <i class="fas fa-clock"></i>
+            <span>Rest 60s</span>
+          </div>
+        </div>
+
+        <div class="how-to">
+          <h3>How to do it:</h3>
+          <ol id="exercise-steps">
+            <li>Hold dumbbells with palms up.</li>
+            <li>Curl the weights up.</li>
+            <li>Squeeze at the top, then lower.</li>
+          </ol>
+        </div>
+
+        <button class="primary-btn full-width" onclick="addToWorkout()">
+          Add to Workout <i class="fas fa-plus"></i>
+        </button>
+      </div>
+    </section>
+
+    <!-- PROGRESS SCREEN -->
+    <section id="progress-screen" class="screen-content">
+      <header class="app-header">
+        <button class="back-btn" onclick="navigateTo('home')">
+          <i class="fas fa-arrow-left"></i>
+        </button>
+        <h2 class="header-title">Your Progress</h2>
+        <div class="header-actions"></div>
+      </header>
+
+      <div class="content-scroll">
+        <div class="progress-tabs">
+          <button class="prog-tab active">Overview</button>
+          <button class="prog-tab">Workouts</button>
+          <button class="prog-tab">Body Stats</button>
+        </div>
+
+        <div class="big-progress-card">
+          <div class="progress-circle-container large">
+            <svg class="progress-ring" width="140" height="140">
+              <circle class="progress-ring-bg" cx="70" cy="70" r="60"></circle>
+              <circle class="progress-ring-circle" cx="70" cy="70" r="60" stroke-dasharray="377" stroke-dashoffset="83"></circle>
+            </svg>
+            <div class="progress-percent">
+              <span class="percent-value">78%</span>
+              <span class="percent-label">Weekly Goal</span>
+            </div>
+          </div>
+          <p class="progress-change positive"><i class="fas fa-arrow-up"></i> +12%</p>
+        </div>
+
+        <h3 class="section-title">Stats Overview</h3>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <i class="fas fa-dumbbell"></i>
+            <span class="stat-value">24</span>
+            <span class="stat-label">Workouts</span>
+          </div>
+          <div class="stat-card">
+            <i class="fas fa-fire"></i>
+            <span class="stat-value">12.5k</span>
+            <span class="stat-label">Calories</span>
+          </div>
+          <div class="stat-card">
+            <i class="fas fa-clock"></i>
+            <span class="stat-value">18h</span>
+            <span class="stat-label">Total Time</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- NUTRITION SCREEN -->
+    <section id="nutrition-screen" class="screen-content">
+      <header class="app-header">
+        <button class="menu-btn" onclick="toggleSideMenu()">
+          <i class="fas fa-bars"></i>
+        </button>
+        <h2 class="header-title">Nutrition</h2>
+        <div class="header-actions"></div>
+      </header>
+
+      <div class="content-scroll">
+        <div class="nutrition-hero">
+          <img src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=600&h=300&fit=crop" alt="Healthy Food">
+          <div class="nutrition-overlay">
+            <h3>Eat clean,<br>Train mean!</h3>
+            <p>Fuel your body for better performance.</p>
+          </div>
+        </div>
+
+        <div class="section-header">
+          <h3>Daily Nutrition Tips</h3>
+          <a href="#" class="view-all">View All</a>
+        </div>
+
+        <div class="tips-list">
+          <div class="tip-item">
+            <div class="tip-icon protein">
+              <i class="fas fa-drumstick-bite"></i>
+            </div>
+            <div class="tip-content">
+              <h4>Increase Protein</h4>
+              <p>1.6-2.2g per kg</p>
+            </div>
+          </div>
+          <div class="tip-item">
+            <div class="tip-icon water">
+              <div class="tip-icon water">
+              <i class="fas fa-tint"></i>
+            </div>
+            <div class="tip-content">
+              <h4>Drink Enough Water</h4>
+              <p>(2-3L daily)</p>
+            </div>
+          </div>
+          <div class="tip-item">
+            <div class="tip-icon food">
+              <i class="fas fa-apple-alt"></i>
+            </div>
+            <div class="tip-content">
+              <h4>Eat More Whole Foods</h4>
+              <p>Less processed, more natural</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="calorie-goal-card">
+          <div class="calorie-icon">
+            <i class="fas fa-fire"></i>
+          </div>
+          <div class="calorie-info">
+            <h4>Your Calorie Goal</h4>
+            <p class="calorie-value">2,500 kcal/day</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- AI COACH SCREEN -->
+    <section id="ai-coach-screen" class="screen-content">
+      <header class="app-header">
+        <button class="menu-btn" onclick="toggleSideMenu()">
+          <i class="fas fa-bars"></i>
+        </button>
+        <h2 class="header-title">AI Gym Coach <span class="beta-badge">Beta</span></h2>
+        <div class="header-actions"></div>
+      </header>
+
+      <div class="content-scroll ai-coach-content">
+        <div class="ai-avatar">
+          <div class="robot-icon">
+            <i class="fas fa-robot"></i>
+          </div>
+        </div>
+        <h3 class="ai-greeting">Hi Raouf! 💪</h3>
+        <p class="ai-subtitle">How can I help you today?</p>
+
+        <div class="ai-actions">
+          <button class="ai-action-btn" onclick="sendAIMessage('Create a workout plan')">
+            <i class="fas fa-clipboard-list"></i>
+            Create a workout plan
+          </button>
+          <button class="ai-action-btn" onclick="sendAIMessage('Improve my diet')">
+            <i class="fas fa-utensils"></i>
+            Improve my diet
+          </button>
+          <button class="ai-action-btn" onclick="sendAIMessage('Check my form')">
+            <i class="fas fa-running"></i>
+            Check my form
+          </button>
+          <button class="ai-action-btn" onclick="sendAIMessage('Answer my question')">
+            <i class="fas fa-question-circle"></i>
+            Answer my question
+          </button>
+        </div>
+
+        <div class="chat-input-container">
+          <input type="text" id="ai-input" placeholder="Type your message..." class="chat-input">
+          <button class="send-btn" onclick="sendAIMessage()">
+            <i class="fas fa-paper-plane"></i>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROFILE SCREEN -->
+    <section id="profile-screen" class="screen-content">
+      <header class="app-header">
+        <button class="menu-btn" onclick="toggleSideMenu()">
+          <i class="fas fa-bars"></i>
+        </button>
+        <h2 class="header-title">Profile</h2>
+        <div class="header-actions">
+          <button class="icon-btn">
+            <i class="fas fa-cog"></i>
+          </button>
+        </div>
+      </header>
+
+      <div class="content-scroll">
+        <div class="profile-header">
+          <div class="profile-avatar">
+            <img src="https://ui-avatars.com/api/?name=Raouf+Ben&background=1a1a1a&color=39FF14&size=120&bold=true" alt="Raouf Ben">
+          </div>
+          <h2 class="profile-name">Raouf Ben</h2>
+          <p class="profile-title">Fitness Enthusiast</p>
+        </div>
+
+        <div class="profile-stats">
+          <div class="p-stat">
+            <span class="p-value">24</span>
+            <span class="p-label">Workouts</span>
+          </div>
+          <div class="p-stat">
+            <span class="p-value">18h</span>
+            <span class="p-label">Total Time</span>
+          </div>
+          <div class="p-stat">
+            <span class="p-value">12.5k</span>
+            <span class="p-label">Calories</span>
+          </div>
+        </div>
+
+        <div class="profile-menu">
+          <a href="#" class="profile-link">
+            <i class="fas fa-bullseye"></i>
+            <span>My Goals</span>
+            <i class="fas fa-chevron-right"></i>
+          </a>
+          <a href="#" class="profile-link">
+            <i class="fas fa-utensils"></i>
+            <span>My Nutrition Plan</span>
+            <i class="fas fa-chevron-right"></i>
+          </a>
+          <a href="#" class="profile-link">
+            <i class="fas fa-history"></i>
+            <span>Workout History</span>
+            <i class="fas fa-chevron-right"></i>
+          </a>
+          <a href="#" class="profile-link">
+            <i class="fas fa-cog"></i>
+            <span>Settings</span>
+            <i class="fas fa-chevron-right"></i>
+          </a>
+          <a href="#" class="profile-link">
+            <i class="fas fa-question-circle"></i>
+            <span>Help & Support</span>
+            <i class="fas fa-chevron-right"></i>
+          </a>
+          <a href="#" class="profile-link">
+            <i class="fas fa-info-circle"></i>
+            <span>About GYMORA</span>
+            <i class="fas fa-chevron-right"></i>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- BOTTOM NAVIGATION -->
+    <nav class="bottom-nav">
+      <a href="#" class="nav-item active" data-screen="home" onclick="navigateTo('home')">
+        <i class="fas fa-home"></i>
+        <span>Home</span>
+      </a>
+      <a href="#" class="nav-item" data-screen="workouts" onclick="navigateTo('workouts')">
+        <i class="fas fa-dumbbell"></i>
+        <span>Workouts</span>
+      </a>
+      <a href="#" class="nav-item" data-screen="progress" onclick="navigateTo('progress')">
+        <i class="fas fa-chart-line"></i>
+        <span>Progress</span>
+      </a>
+      <a href="#" class="nav-item" data-screen="nutrition" onclick="navigateTo('nutrition')">
+        <i class="fas fa-apple-alt"></i>
+        <span>Nutrition</span>
+      </a>
+      <a href="#" class="nav-item" data-screen="profile" onclick="navigateTo('profile')">
+        <i class="fas fa-user"></i>
+        <span>Profile</span>
+      </a>
+    </nav>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
